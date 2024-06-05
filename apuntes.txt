@@ -1,0 +1,11 @@
+git push -u origin main (vinculo rama principal con el origen. Futuros push puedo hacer solo "git push" sin especificar la rama.)
+
+// == Instalo librerias == //
+
+npm i express mongoose dotenv
+
+ npm i -D nodemon //Dependencia solo para desarrollo, no producción
+
+
+// == Nodemon == //
+"npm start": "nodemon index.js" //En package.json para evitar tener que lanzar el servidor cada vez que modifico algo
