@@ -3,6 +3,9 @@ const User = require ('../models/user.model')
 const bcrypt = require("bcrypt")
 const saltRounds = 10 /* Nivel de computo que consumirá bcrypt para hashear la contraseña cuanto mas grande el nro más compleja la encriptación aunque demora más, 10 nro acorde */
 
+const jwt = require ('jsonwebtoken')
+const secret = process.env.SECRET;
+
 async function getUserById(req, res){
     try {
         const id = req.params.id;
@@ -138,8 +141,15 @@ async function deleteUser(req, res){
 
 async function updateUser(req, res){
     try {
-        // res.send("Update User")
         const id = req.params.id
+
+        if(req.user.role !== 'ADMIN_ROLE' && req.user._id !== id){ /* Propiedad de req agregada en el middleware */
+            return res.status(400).send({
+                ok: false,
+                message: 'No puede editar este usuario'
+            })
+        }
+        // res.send("Update User")
         console.log(id)
 
         const newData = req.body;
@@ -174,10 +184,86 @@ async function updateUser(req, res){
     }
 }
 
+
+async function login (req, res){
+    // res.status(200).send({
+    //     ok:true,
+    //     message: 'Login correcto'
+
+    // }) /* Para prueba */
+
+    try {
+        //Obtener email y password que me envia el usuario en el body
+        const email = req.body.email?.toLowerCase(); /* Si existe el email que aplique tolowercase */
+        const password = req.body.password;
+
+        if(!email || !password){
+            return res.status(400).send({
+                ok:false,
+                message:"Email y password son requeridos"
+            })
+        }
+
+        console.log(email, password)
+
+        //Chequear si el usuario existe y obtenerlo
+        const user = await User.findOne({email: {$regex: email, $options: "i"}}) /* Me genera una nueva expresión regular devolveria independientemente de que el usr haya mandado mayus o minus*/
+
+        
+        /* Buscar solo un usuario que cumpla la condición */
+        
+        //Si no existe devuelvo error 404
+        if(!user){
+            return res.status(404).send({
+                ok:false,
+                message: 'Datos incorrectos'
+            })
+        }
+
+        console.log(user)
+
+
+        //Comparar el password enviado con el guardado en la BD. (el pass de la db esta hasheado entonces usamois bcrypt para comparar)
+        const match = await bcrypt.compare(password, user.password)
+
+        //Datos no coinciden => error
+        
+        if(!match){
+            return res.status(400).send({
+                ok:false,
+                message: "Datos incorrectos"
+            })
+        }
+
+        //Saco datos sensibles
+        user.password = undefined;
+
+        //Generar un token de login
+        const token = jwt.sign({user}, secret, {expiresIn: '2m'}) /* Token expira en 2 min */
+
+        //Si esta todo ok => login
+        res.status(200).send({
+            ok:true,
+            message: 'Login correcto',
+            user,
+            token
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            ok:false,
+            message:'Error al hacer el login'
+        })
+    }
+    
+}
+
 module.exports = {
     getUsers,
     postUser,
     deleteUser,
     updateUser,
-    getUserById
+    getUserById,
+    login
 }
