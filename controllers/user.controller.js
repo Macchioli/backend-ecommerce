@@ -38,7 +38,18 @@ async function getUsers(req, res){
     // res.send("GET Users desde controlador")
 
     try {
-        const users = await User.find().select({password: 0}) /* No devuelve password */
+        // const limiteUsuarios = 2;
+        // const page = 0; /* Numero de página que estoy situado. Cantidad de "skip de elementos" que hago */
+
+        const limiteUsuarios = req.query.limit || 2
+        const page = req.query.page || 0 /* Puede recibir un parametro aunque no es obligatorio */
+
+        console.log(req.query)
+
+        const users = await User.find()
+                                .select({password: 0}) /* No devuelve password */
+                                .limit(limiteUsuarios)/* Cuantos documentos que esten guardados me va a devolver */
+                                .skip(page * limiteUsuarios)
 
         res.status(200).send({
             ok:true,
@@ -112,9 +123,13 @@ async function postUser(req, res){
 async function deleteUser(req, res){
     // res.send("DELETE user desde el controlador")
     // console.log(req.params)
-
     
     try {
+
+        // if(req.user?.role !== "ADMIN_ROLE"){
+        //     /* No permitir eliminar */
+        // } //Alternativa con middleware
+
         const id = req.params.id /* id nombre que le di al param en la ruta user.routes */
 
         const deletedUser = await User.findByIdAndDelete(id)
@@ -239,7 +254,7 @@ async function login (req, res){
         user.password = undefined;
 
         //Generar un token de login
-        const token = jwt.sign({user}, secret, {expiresIn: '2m'}) /* Token expira en 2 min */
+        const token = jwt.sign({user}, secret, {expiresIn: '1h'}) /* Token expira en 2 min */
 
         //Si esta todo ok => login
         res.status(200).send({

@@ -3,7 +3,10 @@ const app = express();
 
 const user_routes = require('./routes/user.routes')
 const product_routes = require('./routes/product.routes')
+const cors = require('cors')
 
+//CORS
+app.use(cors())/* Habilito CORS para que podamos acceder desde nuestro front */
 
 app.use(express.json()) /* Agregar esta sentencia para que la app pueda leer el body que le mando con la request */
 

@@ -7,6 +7,7 @@ const SECRET = process.env.SECRET;
 function jwtVerify(req, res, next){ 
 
     const token = req.headers.authorization; /* Aqui es donde recibiremos el token desde la request enviado en la cabecera */
+    // const token = req.headers.authorization.split(" ")[1]//Alternativa Bearer
 
     //Chequeamos si nos enviaron un token, de no ser así retornamos un 401 : unauthorized
     if(!token){
