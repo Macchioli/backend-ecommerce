@@ -44,17 +44,42 @@ async function getUsers(req, res){
         const limiteUsuarios = req.query.limit || 2
         const page = req.query.page || 0 /* Puede recibir un parametro aunque no es obligatorio */
 
+        const [users, total] = await Promise.all([
+            User.find()
+                    .select({password: 0}) /* No devuelve password */
+                    .collection({
+                        locale: 'es'
+                    }) /* Pone los valores en formato español para su ordenamiento xej */
+                    .sort({
+                        fullname: 1 /* 1 o 'asc' ascendente -1 o 'desc' descendente  | Distingue mayus primero y luego minúscula. Para evitarlo usamos collation para que el formato este en "español" */
+                    }) /* Ordenado. Por defecto lo hace por ID, sino puedo indicar las propiedades */
+                    .limit(limiteUsuarios)/* Cuantos documentos que esten guardados me va a devolver */
+                    .skip(page * limiteUsuarios), //Ej: 0 * 100 no saltearía nminguno y mostraría los primeros 100 registros. 1 * 100 saltearía los primeros 100 y mostraría los siguientes.
+                
+            User.countDocuments() /* Devuelve la cantidad total de (en este caso) usuarios que tengo en la base de datos*/
+        ]) /* Optimizamos lo que esta debajo para poder ejecutar ambas promesas al mismo tiempo con Promise.all y dentro un array con todas las ejecuciones pendientes. Alternativa Promise.race donde la primera que se resuelve permite que continue la ejecución. */
+
+
         console.log(req.query)
 
-        const users = await User.find()
-                                .select({password: 0}) /* No devuelve password */
-                                .limit(limiteUsuarios)/* Cuantos documentos que esten guardados me va a devolver */
-                                .skip(page * limiteUsuarios)
+        // const users = await User.find()
+        //                         .select({password: 0}) /* No devuelve password */
+        //                         .collection({
+        //                             locale: 'es'
+        //                         }) /* Pone los valores en formato español para su ordenamiento xej */
+        //                         .sort({
+        //                             fullname: 1 /* 1 o 'asc' ascendente -1 o 'desc' descendente  | Distingue mayus primero y luego minúscula. Para evitarlo usamos collation para que el formato este en "español" */
+        //                         }) /* Ordenado. Por defecto lo hace por ID, sino puedo indicar las propiedades */
+        //                         .limit(limiteUsuarios)/* Cuantos documentos que esten guardados me va a devolver */
+        //                         .skip(page * limiteUsuarios) //Ej: 0 * 100 no saltearía nminguno y mostraría los primeros 100 registros. 1 * 100 saltearía los primeros 100 y mostraría los siguientes.
+
+        // const total = await User.countDocuments(); /* Devuelve la cantidad total de (en este caso) usuarios que tengo en la base de datos*/
 
         res.status(200).send({
             ok:true,
             message: "Usuarios obtenidos correctamente",
-            users
+            users,
+            total
 
         })
 
