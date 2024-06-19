@@ -19,7 +19,7 @@ const userSchema = new Schema({
         trim: true,
         validate:{
             validator: (value) => {
-                const regex = /^[A-Za-z0-9._+\-']+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/
+                const regex = /^[A-Za-z0-9._+\-']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
                 return regex.test(value)
             } /* Valido por medio de un pattern */
         } 

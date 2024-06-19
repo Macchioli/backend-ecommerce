@@ -174,7 +174,8 @@ async function deleteUser(req, res){
     } catch (error) {
         res.status(500).send({
             ok:false,
-            message: "Error al borrar el usuario"
+            message: "Error al borrar el usuario",
+            error
         })
     }
 }
@@ -195,9 +196,9 @@ async function updateUser(req, res){
         const newData = req.body;
 
         //TODO: Hashear password en el update
-        if(req.body.password){
+        // if(req.body.password){
 
-        }
+        // }
 
         //TODO: Resetear Role
 
