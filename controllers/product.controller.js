@@ -4,7 +4,7 @@ const Product = require('../models/product.model')
 async function getProducts(req, res){
     try {
         
-        const products = await Product.find();
+        const products = await Product.find().populate("category", "name"); /* Populate y cual quiero desplegar y que traiga solo el "name", puedo usar varios */
 
         res.status(200).send({
             ok: true,
@@ -26,7 +26,7 @@ async function getProductById(req, res){
     
     const id = req.params.id;
 
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate("category", "name");
 
     if(!product){
         return res.status(404).send({
@@ -80,9 +80,15 @@ async function deleteProduct(req, res){
 
 async function createProduct(req, res){
     try {
+        /* console.log(req.file) */
+
         
         const product = new Product(req.body)
-
+        
+        if(req.file?.filename){
+            product.image = req.file.filename;
+        }
+        
         const newProduct = await product.save()
 
         res.status(201).send({

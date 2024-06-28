@@ -11,6 +11,14 @@ const categorySchema = new Schema({
         minlength: 2,
         maxlength: 80
     },
+    viewValue:{
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        minlength: 2,
+        maxlength: 80
+    },
     description:{
         type: String,
         maxlength: 300,

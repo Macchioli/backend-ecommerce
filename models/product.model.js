@@ -42,9 +42,10 @@ const productSchema = new Schema({
         default: Date.now /* Misma que cuando se creo, pero cuando se actualiza se modificará */
     },
     category:{
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true,
-        index: true
+        index: true,
+        ref: "Category" /* Referencia a que modelo */
     }
 })
 
