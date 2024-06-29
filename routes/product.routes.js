@@ -20,7 +20,7 @@ router.post('/products',[auth, isAdmin, upload], productController.createProduct
 router.delete('/products/:id', [auth, isAdmin], productController.deleteProduct)
 
 //PUT products (id)
-router.put('/products/:id', [auth, isAdmin], productController.updateProduct)
+router.put('/products/:id', [auth, isAdmin, upload], productController.updateProduct)
 
 
 module.exports = router;

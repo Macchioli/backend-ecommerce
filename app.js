@@ -8,10 +8,15 @@ const cors = require('cors')
 
 const api_routes = require("./routes/index.routes")
 
+//Share public folder
+app.use(express.static('public'))
+
 //CORS
 app.use(cors())/* Habilito CORS para que podamos acceder desde nuestro front */
 
 app.use(express.json()) /* Agregar esta sentencia para que la app pueda leer el body que le mando con la request */
+
+
 
 app.use("/api", api_routes) //!En index.routes /* Le agrego el "/api" para que la sume a la ruta base para acceder luego a las rutas definidas */
 

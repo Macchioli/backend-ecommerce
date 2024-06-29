@@ -4,12 +4,21 @@ const Product = require('../models/product.model')
 async function getProducts(req, res){
     try {
         
-        const products = await Product.find().populate("category", "name"); /* Populate y cual quiero desplegar y que traiga solo el "name", puedo usar varios */
+        const page = req.query.page || 0;
+        const limit = req.query.limit || 3;
+
+        const products = await Product.find()
+                                      .populate("category", "name")
+                                      .skip(page * limit)
+                                      .limit(limit); /* Populate y cual quiero desplegar y que traiga solo el "name", puedo usar varios */
+
+        const total = await Product.countDocuments();
 
         res.status(200).send({
             ok: true,
             message: "Productos obtenidos correctamente",
-            products
+            products,
+            total
         })
 
     } catch (error) {
@@ -111,7 +120,16 @@ async function updateProduct(req, res){
        const id = req.params.id
 
        const newData = req.body;
+
+       if(req.file?.filename){
+        newData.image = req.file.filename
+       }else{
+         delete newData.image
+       }
+
        newData.updatedAt = Date.now()
+
+       console.log(newData, id)
 
 
        const updatedProduct = await Product.findByIdAndUpdate(id, newData, {new:true})
