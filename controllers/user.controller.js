@@ -196,11 +196,13 @@ async function updateUser(req, res){
         const newData = req.body;
 
         //TODO: Hashear password en el update
-        // if(req.body.password){
-
-        // }
+        newData.password = undefined;
 
         //TODO: Resetear Role
+
+        if(req.user.role !== "ADMIN_ROLE"){
+            newData.role= undefined;
+        }
 
         const updatedUser= await User.findByIdAndUpdate(id, newData, {new: true}) /* new:true opcion que agrego para que cuando guarde en "updatedUser" sea el actualizado y no su version anterior */
         
