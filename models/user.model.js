@@ -32,8 +32,12 @@ const userSchema = new Schema({
         trim: true /* Evitamos espacios en principio y final */
     },
     bornDate: {
-        type:Date, 
-        required: true
+        type:Number, 
+        required: true,
+    },
+    image:{
+        type: String, /* Tipo string ya que guardaremos el nombre del archivo con el que iremos a buscar la imagen */
+        trim: true
     },
     location: {
         type: String

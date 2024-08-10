@@ -6,12 +6,12 @@ const orderSchema = new Schema({
 
     products:[
         {
-            id: {type: Schema.Types.ObjectId, required: true},
+            product: {type: Schema.Types.ObjectId, required: true, ref:"Product"}, /* Ref al modelo de products porque sabe que es un id pero no de que si no lo especifico */
             price: {type: Number, required: true, min: 0, max: 10000000},
             quantity: {type: Number, required: true, min: 1, default: 1},
         }
     ],
-    user: {type: Schema.Types.ObjectId, required: true},
+    user: {type: Schema.Types.ObjectId, required: true, ref: "User"},
     total: {type: Number, required: true},
     createdAt: {type: Number, default: Date.now},
     updatedAt: {type: Number, default: Date.now},

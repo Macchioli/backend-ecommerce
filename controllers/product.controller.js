@@ -5,7 +5,7 @@ async function getProducts(req, res){
     try {
         
         const page = req.query.page || 0;
-        const limit = req.query.limit || 3;
+        const limit = req.query.limit || 20;
 
         const filter = []
 
@@ -146,7 +146,7 @@ async function updateProduct(req, res){
        const id = req.params.id
 
        const newData = req.body;
-
+    
        if(req.file?.filename){
         newData.image = req.file.filename
        }else{

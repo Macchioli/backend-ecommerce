@@ -41,7 +41,7 @@ async function getUsers(req, res){
         // const limiteUsuarios = 2;
         // const page = 0; /* Numero de página que estoy situado. Cantidad de "skip de elementos" que hago */
 
-        const limiteUsuarios = req.query.limit || 2
+        const limiteUsuarios = req.query.limit || 10
         const page = req.query.page || 0 /* Puede recibir un parametro aunque no es obligatorio */
 
         const [users, total] = await Promise.all([
@@ -127,6 +127,9 @@ async function postUser(req, res){
 
         const user = new User(req.body)
 
+        if(req.file?.filename){
+            user.image = req.file.filename;
+        }
         console.log(user)
 
         const newUser = await user.save();
@@ -182,8 +185,9 @@ async function deleteUser(req, res){
 
 async function updateUser(req, res){
     try {
+        console.log("Esta es la req.body",req.body)
         const id = req.params.id
-
+        
         if(req.user.role !== 'ADMIN_ROLE' && req.user._id !== id){ /* Propiedad de req agregada en el middleware */
             return res.status(400).send({
                 ok: false,
@@ -194,6 +198,13 @@ async function updateUser(req, res){
         console.log(id)
 
         const newData = req.body;
+        console.log("IMAGEEEN", req.file)
+
+        if(req.file?.filename){
+            newData.image = req.file.filename
+        }else{
+            delete newData.image
+        }
 
         //TODO: Hashear password en el update
         newData.password = undefined;
